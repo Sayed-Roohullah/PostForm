@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "543975729756",
+    "project_id": "postform-dd320",
+    "storage_bucket": "postform-dd320.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:543975729756:android:72aa3c336577b1e58c1499",
+        "android_client_info": {
+          "package_name": "com.acclivousbyte.postform"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "543975729756-cq8pb3kd55f3j8vmkuapn97f69ki3kcb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBekgm6uGkgQXMm4vobL7iqY46QnBzkFuE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "543975729756-cq8pb3kd55f3j8vmkuapn97f69ki3kcb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
