@@ -1,17 +1,10 @@
 package com.acclivousbyte.postform.viewModel
 
-import android.Manifest
-import android.content.Context
-import android.content.pm.PackageManager
-import android.database.Cursor
-import android.graphics.Bitmap
+
 import android.net.Uri
-import android.provider.MediaStore
 import android.util.Patterns
-import androidx.core.app.ActivityCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import androidx.loader.content.CursorLoader
 import com.acclivousbyte.postform.extensions.wrapWithEvent
 import com.acclivousbyte.postform.models.generalModels.UploadImageData
 import com.acclivousbyte.postform.models.generalModels.ValidateModel
@@ -22,22 +15,30 @@ import com.acclivousbyte.postform.utils.MainViewUtil.Companion.INVALID_EMAIL
 import com.acclivousbyte.postform.utils.MainViewUtil.Companion.INVALID_PHONE
 import com.acclivousbyte.postform.utils.MainViewUtil.Companion.NAME_BLANK
 import com.acclivousbyte.postform.utils.MainViewUtil.Companion.SERVER_NOT_RESPONDING_MESSAGE
+import com.acclivousbyte.postform.utils.MainViewUtil.Companion.SUCCESS_MESSAGE
+import com.acclivousbyte.postform.utils.MainViewUtil.Companion.UPLOADED
+import com.acclivousbyte.postform.utils.MainViewUtil.Companion.VALID_STATUS_CODE
 import com.acclivousbyte.postform.utils.Repository
-import com.acclivousbyte.postform.view.activities.MainActivity
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
+import java.util.*
 
 
 class MainViewModel(private val repository: Repository): BaseViewModel() {
-    companion object {
-        private const val VALID_STATUS_CODE = 200
-    }
+
+    private var storage: FirebaseStorage = FirebaseStorage.getInstance()
+    private var firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private var storageReference: StorageReference = storage.getReference()
 
     val validationResult : MutableLiveData<String> = MutableLiveData()
     var updateprofile : MutableLiveData<MainResponse> = MutableLiveData()
+    val firebaseData : MutableLiveData<String> = MutableLiveData()
 
 
-    fun updateProfile(
+    private fun updateProfile(
          uploadImageData: UploadImageData,
          image : MultipartBody.Part?
     ){
@@ -68,6 +69,29 @@ class MainViewModel(private val repository: Repository): BaseViewModel() {
             }
         }
     }
+      fun uploadInfo(imgUrl : String,model: UploadImageData){
+        val imageInfo = UploadImageData(
+            model.id,model.name,model.email,model.gender,model.age,model.phone,model.learning_reason,imgUrl)
+        firestore.collection("users").add(imageInfo).addOnSuccessListener {
+            _showHideProgressDialog.value = false.wrapWithEvent()
+            showSnackbarMessage(SUCCESS_MESSAGE)
+        }
+    }
+
+      fun uploadImageToFirebase(fileUri: Uri, model: UploadImageData) {
+          val ref = storageReference.child("myImages/" + UUID.randomUUID().toString())
+          _showHideProgressDialog.value = true.wrapWithEvent()
+          ref.putFile(fileUri)
+              .addOnCompleteListener{
+                  if (it.isSuccessful){
+                       firebaseData.value = UPLOADED
+                      ref.downloadUrl.addOnSuccessListener {
+                          uploadInfo(it.toString(),model)
+                      }
+                  }
+              }
+      }
+
 
     fun performValidation(validateModel: ValidateModel,imageData: UploadImageData,image: MultipartBody.Part?) {
         if (validateModel.pName.isBlank()) {

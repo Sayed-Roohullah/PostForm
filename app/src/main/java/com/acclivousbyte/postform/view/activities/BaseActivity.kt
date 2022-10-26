@@ -1,21 +1,12 @@
 package com.acclivousbyte.postform.view.activities
 
 import android.Manifest
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.provider.MediaStore
-import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.acclivousbyte.postform.extensions.AlertMessageDialog
-import java.security.AccessController.getContext
-
 
 open class BaseActivity: AppCompatActivity() {
 
